@@ -4,6 +4,7 @@ str_opr:.asciz	"Operando: "
 str_op:	.asciz	"Operacao(+, -, *, /, u, f): "
 str_res:.asciz	"Resultado: "
 str_und:.asciz 	"Retornou para: "
+str_eop:.asciz 	"Operacao invalida, tente novamente"
 str_nl:	.asciz	"\n"
 	.align 2
 base:	.word 0
@@ -39,15 +40,6 @@ main_loop:
 	li t0, 'f'
 	beq t1, t0, final
 	
-	la a0, str_opr # pedir operando 2
-	li a7, 4
-	ecall
-	
-	li a7, 5 # ler operando 2
-	ecall
-	
-	mv s1, a0 # s1 recebe operando 2
-	
 	# swtich de operacaoes
 	li t0, '+'
 	beq t1, t0, add_num
@@ -58,31 +50,44 @@ main_loop:
 	li t0, '/'
 	beq t1, t0, div_num
 	
+	#Printando o teste de erro
+	li a7, 4
+	la a0,str_eop
+	ecall
+	
+	jal ra, print_nl
+	
+	j main_loop
+	
 	
 add_num:
+	jal ra, func_pedir_op2
 	add s0, s0, s1 # adiciona operando
 	j fim_operacao
 
 sub_num:
+	jal ra, func_pedir_op2
 	sub s0, s0, s1 # subtrai operando
 	j fim_operacao
 
 mul_num:
+	jal ra, func_pedir_op2
 	mul s0, s0, s1 # multiplica operando
 	j fim_operacao
 
 div_num:
+	jal ra, func_pedir_op2
 	div s0, s0, s1 # divide por operando
 	j fim_operacao
 
 undo:
-	jal ra, func_remove_node # remove n√≥
+	jal ra, func_remove_node # remove nÛ
 	
 	jal ra, func_pegar_topo # pega valor no topo da pilha
 	
-	bne a1, zero, start_up # se pilha est√° vazia, comeca tudo denovo
+	bne a1, zero, start_up # se pilha est· vazia, comeca tudo denovo
 	
-	mv s0, a0 # s0 agora √© o topo da pilha
+	mv s0, a0 # s0 agora È o topo da pilha
 	
 	la a0, str_und # printar string de undo
 	li a7, 4
@@ -103,7 +108,7 @@ final:
 
 fim_operacao:
 	mv a0, s0 
-	jal ra, func_add_node # salva resultado da opera√ß√£o na pilha
+	jal ra, func_add_node # salva resultado da operaÁ„o na pilha
 	
 	la a0, str_res # printar string resultado
 	li a7, 4
@@ -120,8 +125,8 @@ fim_operacao:
 
 
 
-# funcao adicionar n√≥
-# a0 cont√©m valor a ser adicionado
+# funcao adicionar nÛ
+# a0 contÈm valor a ser adicionado
 # retorna nada
 func_add_node:
 	mv t3, a0 # t3 recebe numero a ser adicionado
@@ -130,45 +135,44 @@ func_add_node:
 	li a0, 8
 	ecall
 	
-	# a0 agora cont√©m endere√ßo de novono
+	# a0 agora contÈm endereÁo de novono
 	
 	sw t3, 0(a0) # salva valor em novono.num
 	
-	la t0, base # t0 recebe endere√ßo da base
-	lw t1, 0(t0) # t1 receve conteudo da base (endere√ßo do primeiro n√≥)
+	la t0, base # t0 recebe endereÁo do topo
+	lw t1, 0(t0) # t1 receve conteudo da base (endereÁo do primeiro nÛ)
 	
-	sw t1, 4(a0) # salva endere√ßo do primeiro n√≥ em novono.next
+	sw t1, 4(a0) # salva endereÁo do primeiro nÛ em novono.next
 	
-	sw a0, 0(t0) # salva endere√ßo de novono na base
+	sw a0, 0(t0) # salva endereÁo de novono na base
 	
 	jr ra
 	
-# funcao para remover n√≥
+# funcao para remover nÛ
 # recebe nada
 # retorna valor removido em a1
 func_remove_node:
-	la t0, base # t0 recebe endere√ßo para base
-	lw t1, 0(t0) # t1 recebe conteudo da base (endere√ßo do primeiro n√≥)
+	la t0, base # t0 recebe endereÁo para base
+	lw t1, 0(t0) # t1 recebe conteudo da base (endereÁo do primeiro nÛ)
 	
-	beq t1, zero, start_up # se o conte√∫do da base for 0, lista est√° vazia
+	beq t1, zero, start_up # se o conte˙do da base for 0, lista est· vazia
 	
 	
-	lw t2, 4(t1) # t2 recebe endere√ßo do segundo n√≥ (base->node->next)
-	lw a1, 0(t1) # t1 recebe conte√∫do do primeiro no
+	lw t2, 4(t1) # t2 recebe endereÁo do segundo nÛ (base->node->next)
 	
-	sw t2, 0(t0) # base recebe endere√ßo do segundo n√≥ (base->node->next)
+	sw t2, 0(t0) # base recebe endereÁo do segundo nÛ (base->node->next)
 	
 	jr ra
 	
 # funcao para pegar topo da pilha
 # recebe nada
 # retorna valor no topo da pilha em a0, status em a1
-# a1 0: retornou valor v√°lido
-# a1 1: pilha est√°va vazia
+# a1 0: retornou valor v·lido
+# a1 1: pilha est·va vazia
 
 func_pegar_topo:
 	la t0, base
-	lw t0, 0(t0) # t0 recebe conte√∫do de base (endere√ßo do topo)
+	lw t0, 0(t0) # t0 recebe conte˙do de base (endereÁo do topo)
 	
 	beq t0, zero, pilha_vazia
 	
@@ -180,8 +184,22 @@ func_pegar_topo:
 	pilha_vazia:
 		li a0, 0
 		jr ra
+
+
+# funcao para pedir o operando 2
+# recebe nada
+# salva em s1 o valor do operando
+func_pedir_op2:
+	la a0, str_opr # pedir operando 2
+	li a7, 4
+	ecall
 	
+	li a7, 5 # ler operando 2
+	ecall
 	
+	mv s1, a0 # s1 recebe operando 2
+	
+	jr ra
 	
 # funcao printar nova linha
 print_nl:
