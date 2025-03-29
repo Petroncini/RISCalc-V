@@ -62,21 +62,25 @@ main_loop:
 	
 add_num:
 	jal ra, func_pedir_op2
+	mv s1,a0
 	add s0, s0, s1 # adiciona operando
 	j fim_operacao
 
 sub_num:
 	jal ra, func_pedir_op2
+	mv s1,a0
 	sub s0, s0, s1 # subtrai operando
 	j fim_operacao
 
 mul_num:
 	jal ra, func_pedir_op2
+	mv s1,a0
 	mul s0, s0, s1 # multiplica operando
 	j fim_operacao
 
 div_num:
 	jal ra, func_pedir_op2
+	mv s1,a0
 	div s0, s0, s1 # divide por operando
 	j fim_operacao
 
@@ -188,7 +192,7 @@ func_pegar_topo:
 
 # funcao para pedir o operando 2
 # recebe nada
-# salva em s1 o valor do operando
+# retorna em a0 o valor do operando
 func_pedir_op2:
 	la a0, str_opr # pedir operando 2
 	li a7, 4
@@ -196,8 +200,6 @@ func_pedir_op2:
 	
 	li a7, 5 # ler operando 2
 	ecall
-	
-	mv s1, a0 # s1 recebe operando 2
 	
 	jr ra
 	
