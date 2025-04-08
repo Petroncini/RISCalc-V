@@ -81,17 +81,18 @@ mul_num:
 div_num:
 	jal ra, func_pedir_op2
 	mv s1,a0
+	beq s1, zero, func_tratar_zero	# se divide por zero, nÃ£o realizamos a op
 	div s0, s0, s1 # divide por operando
 	j fim_operacao
 
 undo:
-	jal ra, func_remove_node # remove nó
+	jal ra, func_remove_node # remove nï¿½
 	
 	jal ra, func_pegar_topo # pega valor no topo da pilha
 	
-	bne a1, zero, start_up # se pilha está vazia, comeca tudo denovo
+	bne a1, zero, start_up # se pilha estï¿½ vazia, comeca tudo denovo
 	
-	mv s0, a0 # s0 agora é o topo da pilha
+	mv s0, a0 # s0 agora ï¿½ o topo da pilha
 	
 	la a0, str_und # printar string de undo
 	li a7, 4
@@ -112,7 +113,7 @@ final:
 
 fim_operacao:
 	mv a0, s0 
-	jal ra, func_add_node # salva resultado da operação na pilha
+	jal ra, func_add_node # salva resultado da operaï¿½ï¿½o na pilha
 	
 	la a0, str_res # printar string resultado
 	li a7, 4
@@ -129,8 +130,8 @@ fim_operacao:
 
 
 
-# funcao adicionar nó
-# a0 contém valor a ser adicionado
+# funcao adicionar nï¿½
+# a0 contï¿½m valor a ser adicionado
 # retorna nada
 func_add_node:
 	mv t3, a0 # t3 recebe numero a ser adicionado
@@ -139,44 +140,44 @@ func_add_node:
 	li a0, 8
 	ecall
 	
-	# a0 agora contém endereço de novono
+	# a0 agora contï¿½m endereï¿½o de novono
 	
 	sw t3, 0(a0) # salva valor em novono.num
 	
-	la t0, base # t0 recebe endereço do topo
-	lw t1, 0(t0) # t1 receve conteudo da base (endereço do primeiro nó)
+	la t0, base # t0 recebe endereï¿½o do topo
+	lw t1, 0(t0) # t1 receve conteudo da base (endereï¿½o do primeiro nï¿½)
 	
-	sw t1, 4(a0) # salva endereço do primeiro nó em novono.next
+	sw t1, 4(a0) # salva endereï¿½o do primeiro nï¿½ em novono.next
 	
-	sw a0, 0(t0) # salva endereço de novono na base
+	sw a0, 0(t0) # salva endereï¿½o de novono na base
 	
 	jr ra
 	
-# funcao para remover nó
+# funcao para remover nï¿½
 # recebe nada
 # retorna valor removido em a1
 func_remove_node:
-	la t0, base # t0 recebe endereço para base
-	lw t1, 0(t0) # t1 recebe conteudo da base (endereço do primeiro nó)
+	la t0, base # t0 recebe endereï¿½o para base
+	lw t1, 0(t0) # t1 recebe conteudo da base (endereï¿½o do primeiro nï¿½)
 	
-	beq t1, zero, start_up # se o conteúdo da base for 0, lista está vazia
+	beq t1, zero, start_up # se o conteï¿½do da base for 0, lista estï¿½ vazia
 	
 	
-	lw t2, 4(t1) # t2 recebe endereço do segundo nó (base->node->next)
+	lw t2, 4(t1) # t2 recebe endereï¿½o do segundo nï¿½ (base->node->next)
 	
-	sw t2, 0(t0) # base recebe endereço do segundo nó (base->node->next)
+	sw t2, 0(t0) # base recebe endereï¿½o do segundo nï¿½ (base->node->next)
 	
 	jr ra
 	
 # funcao para pegar topo da pilha
 # recebe nada
 # retorna valor no topo da pilha em a0, status em a1
-# a1 0: retornou valor válido
-# a1 1: pilha estáva vazia
+# a1 0: retornou valor vï¿½lido
+# a1 1: pilha estï¿½va vazia
 
 func_pegar_topo:
 	la t0, base
-	lw t0, 0(t0) # t0 recebe conteúdo de base (endereço do topo)
+	lw t0, 0(t0) # t0 recebe conteï¿½do de base (endereï¿½o do topo)
 	
 	beq t0, zero, pilha_vazia
 	
@@ -210,3 +211,15 @@ print_nl:
 	ecall
 	
 	jr ra
+
+# funÃ§Ã£o para tratar quando o usuÃ¡rio realiza uma divisÃ£o por zero 
+func_tratar_zero:
+	# printa uma mensagem de erro 
+	la a0, str_eop
+	li a7, 4 
+	ecall 
+	jal print_nl
+	# jump para o main_loop
+	j main_loop
+	
+	
