@@ -19,22 +19,22 @@ start_up:
 	li a7, 5 # ler operando 1
 	ecall
 	
-	mv s0, a0 # s0 recebe operando 1, s0 sempre mantera o total atual
+	mv s0, a0 # s0 recebe operando 1, s0 sempre manterá o total atual
 
 main_loop:
 	
-	la a0, str_op # pedir operacao
+	la a0, str_op # pedir operação 
 	li a7, 4
 	ecall
 	
-	li a7, 12 # ler operacao
+	li a7, 12 # ler operação 
 	ecall
 	
-	mv t1, a0 # t1 recebe operacao
+	mv t1, a0 # t1 recebe operação
 	
 	jal ra, print_nl # printar nova linha
 	
-	# switch para nao-operacoes
+	# switch para não-operações 
 	li t0, 'u'
 	beq t1, t0, undo
 	li t0, 'f'
@@ -50,7 +50,7 @@ main_loop:
 	li t0, '/'
 	beq t1, t0, div_num
 	
-	#Printando o teste de erro
+	# Printando o teste de erro
 	li a7, 4
 	la a0,str_eop
 	ecall
@@ -81,18 +81,18 @@ mul_num:
 div_num:
 	jal ra, func_pedir_op2
 	mv s1,a0
-	beq s1, zero, func_tratar_zero	# se divide por zero, não realizamos a op
+	beq s1, zero, func_tratar_zero	# se divide por zero, não realizamos a operação
 	div s0, s0, s1 # divide por operando
 	j fim_operacao
 
 undo:
-	jal ra, func_remove_node # remove n�
+	jal ra, func_remove_node # remove no
 	
 	jal ra, func_pegar_topo # pega valor no topo da pilha
 	
-	bne a1, zero, start_up # se pilha est� vazia, comeca tudo denovo
+	bne a1, zero, start_up # se pilha esta vazia, comeca tudo de novo
 	
-	mv s0, a0 # s0 agora � o topo da pilha
+	mv s0, a0 # s0 agora e o topo da pilha
 	
 	la a0, str_und # printar string de undo
 	li a7, 4
@@ -113,7 +113,7 @@ final:
 
 fim_operacao:
 	mv a0, s0 
-	jal ra, func_add_node # salva resultado da opera��o na pilha
+	jal ra, func_add_node # salva resultado da operacao na pilha
 	
 	la a0, str_res # printar string resultado
 	li a7, 4
@@ -130,54 +130,54 @@ fim_operacao:
 
 
 
-# funcao adicionar n�
-# a0 cont�m valor a ser adicionado
+# funcao adicionar no
+# a0 contem valor a ser adicionado
 # retorna nada
 func_add_node:
 	mv t3, a0 # t3 recebe numero a ser adicionado
 	
-	li a7, 9 # alocate node space in heap
+	li a7, 9 # aloca espaço de um nó na heap 
 	li a0, 8
 	ecall
 	
-	# a0 agora cont�m endere�o de novono
+	# a0 agora contem endereco de novono
 	
 	sw t3, 0(a0) # salva valor em novono.num
 	
-	la t0, base # t0 recebe endere�o do topo
-	lw t1, 0(t0) # t1 receve conteudo da base (endere�o do primeiro n�)
+	la t0, base # t0 recebe endereco do topo
+	lw t1, 0(t0) # t1 recebe conteudo da base (endereco do primeiro no)
 	
-	sw t1, 4(a0) # salva endere�o do primeiro n� em novono.next
+	sw t1, 4(a0) # salva endereco do primeiro no em novono.next
 	
-	sw a0, 0(t0) # salva endere�o de novono na base
+	sw a0, 0(t0) # salva endereco de novono na base
 	
 	jr ra
 	
-# funcao para remover n�
+# funcao para remover no
 # recebe nada
 # retorna valor removido em a1
 func_remove_node:
-	la t0, base # t0 recebe endere�o para base
-	lw t1, 0(t0) # t1 recebe conteudo da base (endere�o do primeiro n�)
+	la t0, base # t0 recebe endereco para base
+	lw t1, 0(t0) # t1 recebe conteudo da base (endereco do primeiro no)
 	
-	beq t1, zero, start_up # se o conte�do da base for 0, lista est� vazia
+	beq t1, zero, start_up # se o conteudo da base for 0, lista esta vazia
 	
 	
-	lw t2, 4(t1) # t2 recebe endere�o do segundo n� (base->node->next)
+	lw t2, 4(t1) # t2 recebe endereco do segundo no (base->node->next)
 	
-	sw t2, 0(t0) # base recebe endere�o do segundo n� (base->node->next)
+	sw t2, 0(t0) # base recebe endereco do segundo no (base->node->next)
 	
 	jr ra
 	
 # funcao para pegar topo da pilha
 # recebe nada
 # retorna valor no topo da pilha em a0, status em a1
-# a1 0: retornou valor v�lido
-# a1 1: pilha est�va vazia
+# a1 0: retornou valor valido
+# a1 1: pilha estava vazia
 
 func_pegar_topo:
 	la t0, base
-	lw t0, 0(t0) # t0 recebe conte�do de base (endere�o do topo)
+	lw t0, 0(t0) # t0 recebe conteudo de base (endereco do topo)
 	
 	beq t0, zero, pilha_vazia
 	
@@ -213,6 +213,8 @@ print_nl:
 	jr ra
 
 # função para tratar quando o usuário realiza uma divisão por zero 
+# recebe nada 
+# retorna nada 
 func_tratar_zero:
 	# printa uma mensagem de erro 
 	la a0, str_eop
