@@ -88,11 +88,16 @@ div_num:
 undo:
 	jal ra, func_remove_node # remove no
 	
+	# se pilha está vazia, volta pra startup
+	la t0, base
+	lw t0, 0(t0)
+	beq t0, zero, start_up
+	
 	jal ra, func_pegar_topo # pega valor no topo da pilha
 	
-	bne a1, zero, start_up # se pilha esta vazia, comeca tudo de novo
+	bne a1, zero, start_up # se pilha esta vazia, pede nova operaçao
 	
-	mv s0, a0 # s0 agora e o topo da pilha
+	mv s0, a0 # s0 agora eh o topo da pilha
 	
 	la a0, str_und # printar string de undo
 	li a7, 4
