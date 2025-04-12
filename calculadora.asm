@@ -5,6 +5,7 @@ str_op:	.asciz	"Operacao(+, -, *, /, u, f): "
 str_res:.asciz	"Resultado: "
 str_und:.asciz 	"Retornou para: "
 str_eop:.asciz 	"Operacao invalida, tente novamente"
+str_mty:.asciz	"Sem resultados salvos, reiniciando"
 str_nl:	.asciz	"\n"
 	.align 2
 base:	.word 0
@@ -81,7 +82,7 @@ mul_num:
 div_num:
 	jal ra, func_pedir_op2
 	mv s1,a0
-	beq s1, zero, func_tratar_zero	# se divide por zero, não realizamos a op
+	beq s1, zero, op_invalida	# se divide por zero, não realizamos a op
 	div s0, s0, s1 # divide por operando
 	j fim_operacao
 
@@ -91,11 +92,9 @@ undo:
 	# se pilha está vazia, volta pra startup
 	la t0, base
 	lw t0, 0(t0)
-	beq t0, zero, start_up
+	beq t0, zero, undo_reinicia
 	
 	jal ra, func_pegar_topo # pega valor no topo da pilha
-	
-	bne a1, zero, start_up # se pilha esta vazia, pede nova operaçao
 	
 	mv s0, a0 # s0 agora eh o topo da pilha
 	
@@ -132,6 +131,27 @@ fim_operacao:
 	
 	j main_loop
 	
+# avisa usuário que o undo foi feito na última operação salva e reinicia a calculadora
+undo_reinicia:
+	la a0, str_mty
+	li a7, 4
+	ecall
+	
+	jal print_nl
+	
+	j start_up
+	
+# trata operações inválidas (divisão por zero, undo e pilha vazia)
+op_invalida:
+	# printa uma mensagem de erro 
+	la a0, str_eop
+	li a7, 4 
+	ecall 
+	jal print_nl
+	# jump para o main_loop
+	j main_loop
+	
+	
 
 
 
@@ -165,7 +185,8 @@ func_remove_node:
 	la t0, base # t0 recebe endere�o para base
 	lw t1, 0(t0) # t1 recebe conteudo da base (endere�o do primeiro n�)
 	
-	beq t1, zero, start_up # se o conte�do da base for 0, lista est� vazia
+	
+	beq t1, zero, op_invalida # se o conte�do da base for 0, lista est� vazia
 	
 	
 	lw t2, 4(t1) # t2 recebe endere�o do segundo n� (base->node->next)
@@ -217,14 +238,6 @@ print_nl:
 	
 	jr ra
 
-# função para tratar quando o usuário realiza uma divisão por zero 
-func_tratar_zero:
-	# printa uma mensagem de erro 
-	la a0, str_eop
-	li a7, 4 
-	ecall 
-	jal print_nl
-	# jump para o main_loop
-	j main_loop
+
 	
 	
