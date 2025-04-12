@@ -20,22 +20,22 @@ start_up:
 	li a7, 5 # ler operando 1
 	ecall
 	
-	mv s0, a0 # s0 recebe operando 1, s0 sempre mantera o total atual
+	mv s0, a0 # s0 recebe operando 1, s0 sempre manterá o total atual
 
 main_loop:
 	
-	la a0, str_op # pedir operacao
+	la a0, str_op # pedir operação 
 	li a7, 4
 	ecall
 	
-	li a7, 12 # ler operacao
+	li a7, 12 # ler operação 
 	ecall
 	
-	mv t1, a0 # t1 recebe operacao
+	mv t1, a0 # t1 recebe operação
 	
 	jal ra, print_nl # printar nova linha
 	
-	# switch para nao-operacoes
+	# switch para não-operações 
 	li t0, 'u'
 	beq t1, t0, undo
 	li t0, 'f'
@@ -51,7 +51,7 @@ main_loop:
 	li t0, '/'
 	beq t1, t0, div_num
 	
-	#Printando o teste de erro
+	# Printando o teste de erro
 	li a7, 4
 	la a0,str_eop
 	ecall
@@ -155,55 +155,55 @@ op_invalida:
 
 
 
-# funcao adicionar n�
-# a0 cont�m valor a ser adicionado
+# funcao adicionar no
+# a0 contem valor a ser adicionado
 # retorna nada
 func_add_node:
 	mv t3, a0 # t3 recebe numero a ser adicionado
 	
-	li a7, 9 # alocate node space in heap
+	li a7, 9 # aloca espaço de um nó na heap 
 	li a0, 8
 	ecall
 	
-	# a0 agora cont�m endere�o de novono
+	# a0 agora contem endereco de novono
 	
 	sw t3, 0(a0) # salva valor em novono.num
 	
-	la t0, base # t0 recebe endere�o do topo
-	lw t1, 0(t0) # t1 receve conteudo da base (endere�o do primeiro n�)
+	la t0, base # t0 recebe endereco do topo
+	lw t1, 0(t0) # t1 recebe conteudo da base (endereco do primeiro no)
 	
-	sw t1, 4(a0) # salva endere�o do primeiro n� em novono.next
+	sw t1, 4(a0) # salva endereco do primeiro no em novono.next
 	
-	sw a0, 0(t0) # salva endere�o de novono na base
+	sw a0, 0(t0) # salva endereco de novono na base
 	
 	jr ra
 	
-# funcao para remover n�
+# funcao para remover no
 # recebe nada
 # retorna valor removido em a1
 func_remove_node:
-	la t0, base # t0 recebe endere�o para base
-	lw t1, 0(t0) # t1 recebe conteudo da base (endere�o do primeiro n�)
+	la t0, base # t0 recebe endereco para base
+	lw t1, 0(t0) # t1 recebe conteudo da base (endereco do primeiro no)
 	
 	
 	beq t1, zero, op_invalida # se o conte�do da base for 0, lista est� vazia
 	
 	
-	lw t2, 4(t1) # t2 recebe endere�o do segundo n� (base->node->next)
+	lw t2, 4(t1) # t2 recebe endereco do segundo no (base->node->next)
 	
-	sw t2, 0(t0) # base recebe endere�o do segundo n� (base->node->next)
+	sw t2, 0(t0) # base recebe endereco do segundo no (base->node->next)
 	
 	jr ra
 	
 # funcao para pegar topo da pilha
 # recebe nada
 # retorna valor no topo da pilha em a0, status em a1
-# a1 0: retornou valor v�lido
-# a1 1: pilha est�va vazia
+# a1 0: retornou valor valido
+# a1 1: pilha estava vazia
 
 func_pegar_topo:
 	la t0, base
-	lw t0, 0(t0) # t0 recebe conte�do de base (endere�o do topo)
+	lw t0, 0(t0) # t0 recebe conteudo de base (endereco do topo)
 	
 	beq t0, zero, pilha_vazia
 	
